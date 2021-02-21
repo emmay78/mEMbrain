@@ -1,4 +1,4 @@
-function [skeletonGT] = convertMembraneToSkeleton(I, memValue)
+function [skeletonGT] = convertMembraneToSkeleton(I, memValue, filterSize)
 %CONVERTMEMBRANETOSKELETON convert 2D membrane ground truth image to
 %2D skeleton ground truth
 %   Uses bwskel to convert a 2D image of membrane ground truth to a
