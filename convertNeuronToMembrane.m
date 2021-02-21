@@ -9,7 +9,7 @@ function [newBorderGT,outputArg2] = convertNeuronToMembrane(neuronGT, structurin
 
     % Fill in ECS if indicated
     if isECSFilled == "On"
-        newBorderGT(grayNeuronGT == 0) = 1;                    
+        newBorderGT(neuronGT == 0) = 1;                    
     end
 
     switch borderValue
