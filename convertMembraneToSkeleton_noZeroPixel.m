@@ -41,5 +41,6 @@ function [skeletonGT] = convertMembraneToSkeleton_noZeroPixel(I, filterSize)
     skeletonGT(bwdist(I_skel)<5) = 1;
     
     figure; imshow(labeloverlay(double(I1==1), skeletonGT));
-end
+\
+*end
 
