@@ -1,22 +1,20 @@
-function [newBorderGT,outputArg2] = convertNeuronToMembrane(neuronGT, structuringElement, borderValue, isECSFilled)
+function [newBorderGT] = convertNeuronToMembrane(neuronGT, structuringElement, isECSFilled)
 %CONVERTNEURONTOMEMBRANE convert 2D neuron ground truth image to membrane
 %ground truth
 %   Uses erosion and dilation to convert a 2D image of neuron ground truth
 %   to a membrane ground truth with the specified structuring element, 
 %   membrane pixel value, and ECS filling/no filling
 
-    newBorderGT = imerode(neuronGT, structuringElement) ~= imdilate(neuronGT, structuringElement); % Conversion to border GT
+    newBorderGT = uint8(imerode(neuronGT + 1, structuringElement) ~= imdilate(neuronGT + 1, structuringElement)); % Conversion to border GT
 
+    
     % Fill in ECS if indicated
     if isECSFilled == "On"
-        newBorderGT(neuronGT == 0) = 1;                    
+        newBorderGT(neuronGT == 0) = 2;                    
     end
-
-    switch borderValue
-        case 0
-            newBorderGT = ~newBorderGT;
-        otherwise
-            % Do nothing; border value is already 1.
-    end
+    
+    newBorderGT(newBorderGT == 1) = 2;
+    newBorderGT(newBorderGT == 0) = 1;
+    
 end
 

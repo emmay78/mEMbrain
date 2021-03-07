@@ -1,4 +1,4 @@
-image = imread("C:\Users\emmaa\Downloads\labels_1_9_redo_skel_1-17_a1-48_forSkeleton\membrane\r2_s13.png");
+image = imread("C:\Users\emmaa\Downloads\AC3AC4Package\AC3\test border 2\ac3_daniel_s0001_border.png");
 
 I = imadjust(image);
 figure
