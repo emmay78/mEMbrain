@@ -30,6 +30,10 @@ end
 
 numberOfPatches = round(sum(labelImage(:)>0)/((1024/downsamplingFactor)^2)*patchDensity);
 
+% Pass preprocessed input image and related parameters to generatePatches,
+% where the patches of the input-output pair will be saved to
+% inputPatchDirectory and labelPatchDirectory
+
 generatePatches(inputImage_corrected, labelImage, inputPatchDirectory, labelPatchDirectory, patchSize, numberOfPatches);
 
 end
