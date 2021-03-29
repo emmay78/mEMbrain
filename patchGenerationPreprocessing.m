@@ -1,4 +1,4 @@
-function [] = patchGenerationPreprocessing(inputImage, labelImage, inputPatchDirectory, labelPatchDirectory, numberOfClasses, patchDensity, patchSize, contrastCorrect, downsamplingFactor)
+function [] = patchGenerationPreprocessing(inputImage, labelImage, inputName, labelName, inputPatchDirectory, labelPatchDirectory, patchDensity, patchSize, contrastCorrect, downsamplingFactor)
 %PATCHGENERATIONPREPROCESSING Preprocesses input and label images before patch generation
 %   Images are preprocessed, including resizing and coloring
 %   per user specifications. They are then passed to the generatePatches 
@@ -19,10 +19,16 @@ inputImage_resized = imresize(inputImage, 1/downsamplingFactor);
 
 if exist('contrastCorrect', 'var')
     if contrastCorrect == "patch"
-        inputImage_corrected = contrastCorrect(inputImage_resized, patchSize);
+        inputImage_resized = contrastCorrect(inputImage_resized, patchSize);
     else
-        inputImage_corrected = contrastCorrect(inputImage_resized);
+        inputImage_resized = contrastCorrect(inputImage_resized);
     end
+end
+
+% Convert 3-dimensional labels into 1-dimensional labels
+
+if (length(size(labelImage)) == 3)
+    labelImage = unique_rgb(labelImage);
 end
 
 % Estimate the number of patches based on the given "patch density" (number
@@ -34,7 +40,7 @@ numberOfPatches = round(sum(labelImage(:)>0)/((1024/downsamplingFactor)^2)*patch
 % where the patches of the input-output pair will be saved to
 % inputPatchDirectory and labelPatchDirectory
 
-generatePatches(inputImage_corrected, labelImage, inputPatchDirectory, labelPatchDirectory, patchSize, numberOfPatches);
+generatePatches(inputImage_resized, labelImage, inputName, labelName, inputPatchDirectory, labelPatchDirectory, patchSize, numberOfPatches);
 
 end
 
