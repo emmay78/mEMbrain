@@ -21,15 +21,15 @@ diameter = patchSize/2;
 % Pad the input and label image with 0's around the border so generation of
 % patches at the border of the image is avoided
 
-inputImage_padded = padarray(inputImage, [1 1], 0);
-labelImage_padded = padarray(labelImage, [1 1], 0);
+labelImage = padarray(labelImage, [diameter diameter]/2, 0);
+inputImage = padarray(inputImage, [diameter diameter]/2, 0);
 
 % Compute collection of valid pixels
 
-valid = false(size(labelImage_padded)+2);
+valid = false(size(labelImage)+2);
 
 for degree = 0:5:360
-    labelImage_rotated = padarray(imrotate(labelImage_padded, degree, 'crop'), [1 1], 0);
+    labelImage_rotated = padarray(imrotate(labelImage, degree, 'crop'), [1 1], 0);
     
     distanceTransform = bwdist(labelImage_rotated == 0, 'chessboard');
     
