@@ -18,7 +18,7 @@ for i = 1:patchSize(1):dimensions(1)-1
         end_j = min(dimensions(2), j + patchSize(j) - 1);
         
         try
-            inputImage(i:end_i, j:end_j) = adapthiseq(inputImage(i:end_i, j:end_j));
+            inputImage(i:end_i, j:end_j) = adapthisteq(inputImage(i:end_i, j:end_j));
         catch
             keyboard
         end
