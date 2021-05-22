@@ -1,11 +1,11 @@
-function [trainedNet] = deepLearningTraining(inputDirectory, labelDirectory, preTrainedNetDirectory, numEpochs, numClasses, networkName, advancedSettings)
+function [trainedNet] = deepLearningTraining(inputDirectory, labelDirectory, preTrainedNetDirectory, trainedNetDirectory, numEpochs, numClasses, networkName, saveFormat, advancedSettings)
 %DEEPLEARNINGTRAINING Trains deep learning model in Train a Network feature
 %   Based on training data in inputDirectory and labelDirectory, trains a
 %   neural network that is either a UNET with specified UNET depth or a
 %   imported network, with advanced settings as specified in
 %   advancedSettings struct
 
-if ~exist('preTrainedNet', 'var')
+if ~exist('preTrainedNetDirectory', 'var')
     preTrainedNetDirectory = [];
 end
 
@@ -34,7 +34,7 @@ end
 % Split training and validation data
 
 [train, validation, test] = dividerand(trainingDatastore.NumObservations, ...
-    advancedSettings.trainingPercent, 1 - advancedSettings.trainingPercent, 0);
+    advancedSettings.trainingPercent/100, 1 - advancedSettings.trainingPercent/100, 0);
 
 trainingData = partitionByIndex(trainingDatastore, train);
 validationData = partitionByIndex(trainingDatastore, validation);
@@ -59,7 +59,32 @@ options = trainingOptions(advancedSettings.optimizer,...
     'LearnRateDropFactor', advancedSettings.learnRateDropFactor);
 
 [net, info] = trainNetwork(trainingData, netGraph, options);
-trainedNet = layerGraph(net)    
+trainedNet = layerGraph(net)
+save(fullfile(trainedNetDirectory, strcat(networkName, '.', saveFormat)), 'net', 'info');
+ 
+% Save mEMbrain_training.log file
+
+headString = '===================================================';
+titleString = 'mEMBRAIN Deep Learning Neural Network Training Log';
+trainedPathString = strcat('Trained Network Path:', {' '}, fullfile(trainedNetDirectory, strcat(networkName, '.', saveFormat)));
+inputDirString = strcat('Ground Truth Input Directory:', {' '}, inputDirectory);
+labelDirString = strcat('Ground Truth Label Directory:', {' '}, labelDirectory);
+baseNetworkString = strcat('Base Network (if any):', {' '}, preTrainedNetDirectory);
+numEpochsString = strcat('# of Epochs:', {' '}, num2str(numEpochs));
+numClassesString = strcat('# of Classes:', {' '}, num2str(numClasses));
+netDepthString = strcat('UNET Network Depth:', {' '}, num2str(advancedSettings.netDepth));
+shuffleString = strcat('Shuffle training data?:', {' '}, advancedSettings.shuffle);
+initialLRString = strcat('Initial Learning Rate:', {' '}, num2str(advancedSettings.learningRate));
+learnRateSchedString = strcat('Learning Rate Schedule?:', {' '}, num2str(advancedSettings.learnRateSchedule));
+learnRateDropString = strcat('Learning Rate Drop (if any):', {' '}, num2str(advancedSettings.learnRateDropFactor));
+solverString = strcat('Training optimizer/solver:', {' '}, advancedSettings.optimizer);
+
+fileID = fopen(fullfile(trainedNetDirectory, strcat(networkName, '.log')), 'wt');
+fprintf(fileID, '%s \r\n', headString, titleString, headString, trainedPathString{1},...
+    inputDirString{1}, labelDirString{1}, baseNetworkString{1}, numEpochsString{1},...
+    numClassesString{1}, netDepthString{1}, shuffleString{1}, initialLRString{1},...
+    learnRateSchedString{1}, learnRateDropString{1}, solverString{1});
+fclose(fileID);
 
 end
 
