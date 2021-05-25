@@ -41,7 +41,7 @@ validationData = partitionByIndex(trainingDatastore, validation);
 
 % Setup network training options
 
-checkpointPath = pwd;
+checkpointPath = trainedNetDirectory;
 
 options = trainingOptions(advancedSettings.optimizer,...
     'InitialLearnRate', advancedSettings.learningRate,...
@@ -59,7 +59,7 @@ options = trainingOptions(advancedSettings.optimizer,...
     'LearnRateDropFactor', advancedSettings.learnRateDropFactor);
 
 [net, info] = trainNetwork(trainingData, netGraph, options);
-trainedNet = layerGraph(net)
+trainedNet = layerGraph(net);
 save(fullfile(trainedNetDirectory, strcat(networkName, '.', saveFormat)), 'net', 'info');
  
 % Save mEMbrain_training.log file
