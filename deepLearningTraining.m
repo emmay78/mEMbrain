@@ -23,7 +23,7 @@ classNames = strcat('label_', cellstr(num2str((1:numClasses)') ));
 
 if ~isempty(preTrainedNetDirectory)
     netGraph = layerGraph(getfield(load(preTrainedNetDirectory), 'net')); % Assumes that preTrainedNetDirectory file points to .mat containing struct with field 'net'
-    classNames = netGraph.OutputNames;
+    classNames = cellstr(netGraph.Layers(end).Classes);
 else
     netGraph = unetLayers(netImageSize, numClasses, 'EncoderDepth', advancedSettings.netDepth);
 end
