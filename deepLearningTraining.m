@@ -19,17 +19,18 @@ netImageSize = [inputSize 1];
 labelIDs = uint8(255*([1:numClasses]-1)/(numClasses-1));
 classNames = strcat('label_', cellstr(num2str((1:numClasses)') ));
 
-labelDatastore = pixelLabelDatastore(labelDirectory, classNames, labelIDs);
-
-trainingDatastore = pixelLabelImageDatastore(inputDatastore, labelDatastore);
-
 % Setup network for training, including hyperparameters
 
 if ~isempty(preTrainedNetDirectory)
     netGraph = layerGraph(getfield(load(preTrainedNetDirectory), 'net')); % Assumes that preTrainedNetDirectory file points to .mat containing struct with field 'net'
+    classNames = netGraph.OutputNames;
 else
     netGraph = unetLayers(netImageSize, numClasses, 'EncoderDepth', advancedSettings.netDepth);
 end
+
+labelDatastore = pixelLabelDatastore(labelDirectory, classNames, labelIDs);
+
+trainingDatastore = pixelLabelImageDatastore(inputDatastore, labelDatastore);
 
 % Split training and validation data
 
