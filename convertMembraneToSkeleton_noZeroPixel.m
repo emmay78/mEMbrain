@@ -16,11 +16,7 @@ function [skeletonGT] = convertMembraneToSkeleton_noZeroPixel(I, filterSize)
     InonMem_sm = imfilter(InonMem, fspecial('gaussian',...
         [filterSize filterSize], 2)) > 0.5;
     
-%     try
-        Imem = bwareaopen(I == memLabel, 15, 8);
-%     catch
-%         keyboard
-%     end
+    Imem = bwareaopen(I == memLabel, 15, 8);
     
     Imem_sm = imfilter(Imem, fspecial('gaussian',...
         [filterSize filterSize], 2)) > 0.5;
@@ -41,6 +37,5 @@ function [skeletonGT] = convertMembraneToSkeleton_noZeroPixel(I, filterSize)
     skeletonGT(bwdist(I_skel)<5) = 1;
     
     figure; imshow(labeloverlay(double(I1==1), skeletonGT));
-\
-*end
+end
 

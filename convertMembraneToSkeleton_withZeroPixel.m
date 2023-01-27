@@ -16,11 +16,7 @@ function [skeletonGT] = convertMembraneToSkeleton_withZeroPixel(I, filterSize)
     InonMem_sm = imfilter(InonMem, fspecial('gaussian',...
         [filterSize filterSize], 2)) > 0.5;
     
-%     try
-        Imem = bwareaopen(I == memLabel, 15, 8);
-%     catch
-%         keyboard
-%     end
+    Imem = bwareaopen(I == memLabel, 15, 8);
     
     Imem_sm = imfilter(Imem, fspecial('gaussian',...
         [filterSize filterSize], 2)) > 0.5;
