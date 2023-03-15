@@ -59,9 +59,11 @@ options = trainingOptions(advancedSettings.optimizer,...
     'LearnRateDropPeriod', 2,...
     'LearnRateDropFactor', advancedSettings.learnRateDropFactor);
 
-[net, info] = trainNetwork(trainingData, netGraph, options);
-trainedNet = layerGraph(net);
-save(fullfile(trainedNetDirectory, strcat(networkName, '.', saveFormat)), 'net', 'info');
+net = trainNetwork(trainingData, netGraph, options);
+if (saveFormat == "mat")
+    save(fullfile(trainedNetDirectory, strcat(networkName, '.mat')), 'net');
+else
+    exportONNXNetwork(net, fullfile(trainedNetDirectory, strcat(networkName, '.onnx')))
  
 % Save mEMbrain_training.log file
 
@@ -79,12 +81,13 @@ initialLRString = strcat('Initial Learning Rate:', {' '}, num2str(advancedSettin
 learnRateSchedString = strcat('Learning Rate Schedule?:', {' '}, num2str(advancedSettings.learnRateSchedule));
 learnRateDropString = strcat('Learning Rate Drop (if any):', {' '}, num2str(advancedSettings.learnRateDropFactor));
 solverString = strcat('Training optimizer/solver:', {' '}, advancedSettings.optimizer);
+inputPatchSize = strcat('Input patch size:', {' '}, num2str(inputSize(1:2)))
 
 fileID = fopen(fullfile(trainedNetDirectory, strcat(networkName, '.log')), 'wt');
 fprintf(fileID, '%s \r\n', headString, titleString, headString, trainedPathString{1},...
     inputDirString{1}, labelDirString{1}, baseNetworkString{1}, numEpochsString{1},...
     numClassesString{1}, netDepthString{1}, shuffleString{1}, initialLRString{1},...
-    learnRateSchedString{1}, learnRateDropString{1}, solverString{1});
+    learnRateSchedString{1}, learnRateDropString{1}, solverString{1}, inputPatchSize{1});
 fclose(fileID);
 
 end
