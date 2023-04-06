@@ -4,10 +4,12 @@ function [] = vsvi_to_vsseg(miplevel, layernr, seglayer, annlayer, srcannlayer, 
 
 immediateflag = 0;
 requestloadflag = 1;
-app.vast.setapilayersenabled(1)
+
+vast = evalin('base','vast');
+vast.setapilayersenabled(1)
 
 if strcmp(locationMethod,'RANDOM')
-    vinfo = app.vast.getinfo();
+    vinfo = vast.getinfo();
     size_x = double(vinfo.datasizex);
     size_y = double(vinfo.datasizey);
     size_z = double(vinfo.datasizez);
@@ -48,8 +50,8 @@ if strcmp(locationMethod,'RANDOM')
 elseif strcmp(locationMethod,'FromVSSANOOFILE')
     annlayer_sourceCoordinates = srcannlayer;
     
-    app.vast.setselectedapilayernr(annlayer_sourceCoordinates)
-    [aonodedatac, ~] = app.vast.getaonodedata();
+    vast.setselectedapilayernr(annlayer_sourceCoordinates)
+    [aonodedatac, ~] = vast.getaonodedata();
     xx=aonodedatac(:,6);
     yy=aonodedatac(:,7);
     zz=aonodedatac(:,8);
@@ -57,11 +59,13 @@ elseif strcmp(locationMethod,'FromVSSANOOFILE')
     N = numel(xx);
 end
 
+W = ceil(tileSize/2)/2^miplevel;
+
 for icoord=1:N
     coords = [xx(icoord) yy(icoord) zz(icoord)];
 
-    [~] = app.vast.setselectedapilayernr(seglayer);
-    J = app.vast.getsegimageRLEdecoded(miplevel,coords(1)-tileSize,coords(1)+tileSize-1,coords(2)-tileSize,coords(2)+tileSize-1,coords(3),coords(3),immediateflag,requestloadflag);
+    [~] = vast.setselectedapilayernr(seglayer);
+    J = vast.getsegimageRLEdecoded(miplevel,coords(1)-tileSize,coords(1)+tileSize-1,coords(2)-tileSize,coords(2)+tileSize-1,coords(3),coords(3),immediateflag,requestloadflag);
     
     while (J(:) > 0)
         coords(1)=randi([P0(1)+tileSize+1 P1(1)-tileSize-1],N,1);
@@ -75,7 +79,7 @@ for icoord=1:N
     yy(icoord) = coords(2);
     zz(icoord) = coords(3);
 
-    [emimage,~] = app.vast.getemimage(layernr,miplevel,coords(1)-tileSize,coords(1)+tileSize-1,coords(2)-tileSize, coords(2)+tileSize-1,coords(3),coords(3),immediateflag,requestloadflag);
+    [emimage,~] = vast.getemimage(layernr,miplevel,coords(1)-tileSize,coords(1)+tileSize-1,coords(2)-tileSize, coords(2)+tileSize-1,coords(3),coords(3),immediateflag,requestloadflag);
 
     K = zeros(size(emimage),'uint8');
     K(emimage<threshold)=1;
@@ -83,14 +87,14 @@ for icoord=1:N
 
     I = zeros(size(emimage),'uint8');
     I(emimage>=threshold)=2;
-    I(:,[1 2 end-1 end]) = K(:,[1 2 end-1 end]);
-    I([1 2 end-1 end],:) = K([1 2 end-1 end],:);
+%     I(:,[1 2 y_end-1 y_end]) = K(:,[1 2 end-1 end]);
+%     I([1 2 end-1 end],:) = K([1 2 end-1 end],:);
 
-    [~] = app.vast.setselectedapilayernr(seglayer)
-    [~] = app.vast.setsegimageRLE(miplevel,coords(1)-W,coords(1)+W-1,coords(2)-W,coords(2)+W-1,coords(3),coords(3),I);
+    [~] = vast.setselectedapilayernr(seglayer)
+    [~] = vast.setsegimageRLE(miplevel,coords(1)-W,coords(1)+W-1,coords(2)-W,coords(2)+W-1,coords(3),coords(3),I);
 
-    [~] = app.vast.setselectedapilayernr(annlayer)
-    app.vast.addaonode(coords(1),coords(2),coords(3));
+    [~] = vast.setselectedapilayernr(annlayer)
+    vast.addaonode(coords(1),coords(2),coords(3));
     
 end
 
