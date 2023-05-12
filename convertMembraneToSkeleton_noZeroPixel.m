@@ -22,7 +22,7 @@ function [skeletonGT] = convertMembraneToSkeleton_noZeroPixel(I, filterSize)
         [filterSize filterSize], 2)) > 0.5;
     
     I1 = zeros(size(I),class(I));
-    I1(Imem_sm) = 1;
+    I1(Imem_sm) = memLabel;
     I1(InonMem_sm) = nonMemLabel;
     I1_med =  medfilt2(I1, [9 9]);
     I1(I1==0) = I1_med(I1 == 0); 
